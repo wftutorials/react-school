@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import 'react-notifications/lib/notifications.css';
 import Home from "./Home";
 import Dashboard from "./Dashboard";
 import Student from "./Students"

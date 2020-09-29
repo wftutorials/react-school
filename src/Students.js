@@ -6,17 +6,27 @@ import SideBar from "./SideBar";
 import NavBar from "./NavBar";
 import EditStudent from "./EditStudent";
 import ListStudents from "./ListStudents";
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 class Students extends Component {
 
     constructor(props) {
         super(props);
         this.getStudents();
-        this.state = {students:[], showStudents:true, studentModel : {} };
+        this.state = {students:[], showStudents:true, studentModel : {}, refresh:false };
         this.viewStudent = this.viewStudent.bind(this);
         this.viewAllStudents = this.viewAllStudents.bind(this);
         this.saveStudent = this.saveStudent.bind(this);
+        this.createStudent = this.createStudent.bind(this);
+        this.deleteStudent = this.deleteStudent.bind(this);
+        this.deleteStudentRequest = this.deleteStudentRequest.bind(this);
 
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(this.props != nextProps) {
+
+        }
     }
 
     viewStudent(model){
@@ -27,25 +37,50 @@ class Students extends Component {
         this.setState({ showStudents:true});
     }
 
-    saveStudent(data){
-        console.log(data);
-        /*
+    createStudent(){
+        this.setState({ showStudents:false, studentModel: {} });
+    }
+
+    deleteStudent(model){
+       if(window.confirm("Are you sure you want to delete this student?")){
+           this.deleteStudentRequest(model);
+       }
+    }
+
+    deleteStudentRequest(model){
+        let formData = new FormData();
+        formData.append("id", model.id);
+        fetch("http://dev.samples.com/removeStudents.php",
+            {
+                body: formData,
+                method: "post"
+            }).then(()=>{
+            NotificationManager.success('Deleted ' + model.firstname);
+            this.getStudents();
+        });
+    }
+
+    saveStudent(data, action){
         fetch("http://dev.samples.com/insertStudents.php",
             {
                 body: data,
                 method: "post"
             }).then(()=>{
-
-        });*/
+            if(data.get('id')){
+                NotificationManager.success('Student updated');
+            }else{
+                NotificationManager.success('Student Created');
+            }
+            this.getStudents();
+            this.setState({showStudents:true})
+        });
     }
 
     getStudents(){
         fetch('http://dev.samples.com/getStudents.php')
             .then(rsp=>rsp.json())
             .then(response =>{
-                this.setState({items:response.data});
                 this.setState({students:response.data});
-                console.log(response.data,"home.js")
             })
     }
 
@@ -58,7 +93,11 @@ class Students extends Component {
 
                         <div className="container-fluid">
                             {this.state.showStudents ?
-                                <ListStudents viewStudent={this.viewStudent}/>
+                                <ListStudents
+                                    students = {this.state.students}
+                                    viewStudent={this.viewStudent}
+                                    createStudent={this.createStudent}
+                                    deleteStudent={this.deleteStudent}/>
                                 :
                                 <EditStudent
                                     viewAllStudents={this.viewAllStudents}
@@ -66,6 +105,7 @@ class Students extends Component {
                                     saveStudent={this.saveStudent}
                                 />
                             }
+                            <NotificationContainer/>
                         </div>
 
                     </div>

@@ -5,30 +5,40 @@ class ListStudents extends Component {
 
     constructor(props) {
         super(props);
-        this.getStudents();
-        this.state = {students:[], editStudent:false};
+        this.state = {students:this.props.students, editStudent:false};
 
     }
+
+    componentWillReceiveProps(nextProps) {
+        if(this.props != nextProps) {
+            this.setState({
+                students: nextProps.students
+            });
+        }
+    }
+
+
     getStudents(){
         fetch('http://dev.samples.com/getStudents.php')
             .then(rsp=>rsp.json())
             .then(response =>{
                 this.setState({items:response.data});
                 this.setState({students:response.data});
-                console.log(response.data,"home.js")
             })
     }
 
     render() {
         return (
             <div>
-                <h1>Students</h1>
+                <h1>All Students
 
+                    <button onClick={()=>{this.props.createStudent()}} type="button" className="btn btn-primary float-right">Add new student</button>
+                </h1>
 
                 <table className="table">
                     <thead>
                     <tr>
-                        <th>ID #</th>
+                        <th>Student Id #</th>
                         <th scope="col">Firstname</th>
                         <th scope="col">Lastname</th>
                         <th scope="col">Classroom</th>
@@ -44,7 +54,7 @@ class ListStudents extends Component {
                             <td>{row.classroom}</td>
                             <td>
                                 <a onClick={()=>{this.props.viewStudent(row)}}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;
-                                <a><i className="fa fa-trash"></i></a>
+                                <a onClick={()=>{this.props.deleteStudent(row)}}><i className="fa fa-trash"></i></a>
                             </td>
                         </tr>
                     )}
