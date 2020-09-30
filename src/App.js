@@ -7,6 +7,7 @@ import Dashboard from "./Dashboard";
 import Student from "./Students"
 import Teachers from "./Teachers";
 import Courses from "./Courses";
+import Enrollments from "./Enrollments"
 import EditStudent from "./EditStudent";
 import {Route, Switch, BrowserRouter as Router, useParams} from 'react-router-dom';
 
@@ -21,9 +22,9 @@ function App() {
               </Route>
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/students" component={Student} />
-              <Route path="/student/:id" component={EditStudent} id={id} />
               <Route path="/teachers" component={Teachers} />
               <Route path="/courses" component={Courses} />
+              <Route path="/enrollments" component={Enrollments} />
           </Switch>
       </Router>
   );
